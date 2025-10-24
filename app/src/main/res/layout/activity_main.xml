@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainRoot"
     android:layout_width="match_parent"
@@ -9,4 +10,40 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <!-- Everything inside this card becomes your rounded "tray" -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/bottomTray"
+            android:layout_width="390dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="10dp"
+            app:cardCornerRadius="38dp"
+            app:cardElevation="0dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp">
+
+            <!-- The Bottom Navigation bar -->
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_nav"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
+                app:itemIconTint="@color/bottom_nav_icon"
+                app:itemTextColor="@color/bottom_nav_text"
+                app:labelVisibilityMode="selected"
+                app:menu="@menu/menu_bottom" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </FrameLayout>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +55,13 @@ public class SignupActivity extends AppCompatActivity {
         tvAlready = findViewById(R.id.tvAlready);
 
         btnCreate.setOnClickListener(v -> tryCreateAccount());
-        tvAlready.setOnClickListener(v -> finish());
+        tvAlready.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

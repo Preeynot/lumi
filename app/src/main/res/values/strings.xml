@@ -10,6 +10,7 @@
     <string name="password_hint">password</string>
     <string name="forgot">Forgot Password?</string>
     <string name="login">Login</string>
+    <string name="logging_in">Logging In...</string>
     <string name="no_account">Don\'t have an account?</string>
 
 
@@ -62,7 +63,7 @@
     <string name="complain_generated">Complain Generated</string>
     <string name="maintenance_requested">Maintenance Requested</string>
 
-<!--    form validations -->
+    <!--    form validations -->
 
     <string name="invalid_phone">Enter a valid phone</string>
 
@@ -73,6 +74,8 @@
     <string name="password_min_chars">Minimum 6 characters</string>
     <string name="creating">Creating…</string>
     <string name="invalid_number">Enter a valid number</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
