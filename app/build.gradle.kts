@@ -52,4 +52,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation ("com.google.firebase:firebase-messaging")
+    implementation ("com.google.firebase:firebase-functions")
+    implementation ("io.agora.rtc:full-sdk:4.2.6")
 }
+
+apply (plugin = "com.google.gms.google-services")

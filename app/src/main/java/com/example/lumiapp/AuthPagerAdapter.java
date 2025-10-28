@@ -14,17 +14,9 @@ public class AuthPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if (position == 1) {
-            // Position 1 (PM Tab) gets the PM Host
-            return new PM_HostFragment();
-        }
-
-        // Position 0 (Renter Tab) gets the Renter Host
-        return new Renter_HostFragment();
+        return position == 1 ? new PM_HostFragment() : new Renter_HostFragment();
     }
 
     @Override
-    public int getItemCount() {
-        return 2;
-    }
+    public int getItemCount() { return 2; }
 }

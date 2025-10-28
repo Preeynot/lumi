@@ -14,13 +14,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.lumiapp.core.push.PushHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -28,49 +30,55 @@ import java.util.Map;
 
 public class Renter_SignupFragment extends Fragment {
 
-    // All variables from your original SignupActivity
-    private TextInputLayout tilName, tilEmail, tilPhone, tilPassword;
-    private TextInputEditText etName, etEmail, etPhone, etPassword;
+    private TextInputLayout tilName, tilEmail, tilPhone, tilPassword, tilPropertyId, tilUnitId;
+    private TextInputEditText etName, etEmail, etPhone, etPassword, etPropertyId, etUnitId;
     private MaterialButton btnCreate;
     private TextView tvAlready;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    public Renter_SignupFragment() {
-        // Required empty public constructor
-    }
+    public Renter_SignupFragment() { /* Required empty public constructor */ }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // NOTE: This inflates fragment_renter_signup.xml. For now, you can have this XML be a copy of fragment_pm_signup.xml.
         return inflater.inflate(R.layout.fragment_renter_signup, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initializeViews(view);
+        initializeFirebase();
+        setupClickListeners();
+    }
 
-        // Initialize Firebase
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
-        // Find all views using `view.findViewById()`
+    private void initializeViews(View view) {
         tilName = view.findViewById(R.id.tilName);
         tilEmail = view.findViewById(R.id.tilEmail);
         tilPhone = view.findViewById(R.id.tilPhone);
         tilPassword = view.findViewById(R.id.tilPassword);
+        tilPropertyId = view.findViewById(R.id.tilPropertyId);
+        tilUnitId = view.findViewById(R.id.tilUnitId);
+
         etName = view.findViewById(R.id.etName);
         etEmail = view.findViewById(R.id.etEmail);
         etPhone = view.findViewById(R.id.signup_Phone);
         etPassword = view.findViewById(R.id.signup_Pass);
+        etPropertyId = view.findViewById(R.id.etPropertyId);
+        etUnitId = view.findViewById(R.id.etUnitId);
+
         btnCreate = view.findViewById(R.id.btnCreate);
         tvAlready = view.findViewById(R.id.tvAlready);
+    }
 
-        // Set click listeners
+    private void initializeFirebase() {
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void setupClickListeners() {
         btnCreate.setOnClickListener(v -> tryCreateAccount());
-
-        // This is the trigger to switch to the Login fragment
         tvAlready.setOnClickListener(v -> {
             if (getParentFragment() instanceof AuthFragmentSwitcher) {
                 ((AuthFragmentSwitcher) getParentFragment()).switchToLogin();
@@ -78,51 +86,58 @@ public class Renter_SignupFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // If a user is already logged in, route them immediately
-        if (auth.getCurrentUser() != null) {
-            routeAfterAuth();
-        }
-    }
-
     private void tryCreateAccount() {
         clearErrors();
+
         String name = str(etName);
         String email = str(etEmail);
-        String phone = str(etPhone);
         String pass = str(etPassword);
+        String propertyId = str(etPropertyId);
+        String unitId = str(etUnitId);
 
         boolean ok = true;
         if (TextUtils.isEmpty(name)) {
-            tilName.setError(getString(R.string.required));
-            ok = false;
+            tilName.setError("Required"); ok = false;
         }
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            tilEmail.setError(getString(R.string.invalid_email));
-            ok = false;
-        }
-        if (TextUtils.isEmpty(phone) || phone.length() < 7) {
-            tilPhone.setError(getString(R.string.invalid_phone));
-            ok = false;
+            tilEmail.setError("Invalid email"); ok = false;
         }
         if (TextUtils.isEmpty(pass) || pass.length() < 6) {
-            tilPassword.setError(getString(R.string.password_min_chars));
-            ok = false;
+            tilPassword.setError("Minimum 6 characters"); ok = false;
         }
+        if (TextUtils.isEmpty(propertyId)) {
+            tilPropertyId.setError("Required"); ok = false;
+        }
+        if (TextUtils.isEmpty(unitId)) {
+            tilUnitId.setError("Required"); ok = false;
+        }
+
         if (!ok) return;
 
         toggleLoading(true);
 
-        auth.createUserWithEmailAndPassword(email, pass)
-                .addOnSuccessListener(authResult -> {
-                    Toast.makeText(getActivity(), "Renter account created!", Toast.LENGTH_SHORT).show();
-                    if (auth.getCurrentUser() == null) {
+        // Verify the unit exists BEFORE creating the user
+        db.collection("units").document(unitId).get()
+                .addOnSuccessListener(snap -> {
+                    if (!snap.exists() || !propertyId.equals(snap.getString("propertyId"))) {
+                        Toast.makeText(getActivity(), "Unit not found or does not belong to the specified Property Code.", Toast.LENGTH_LONG).show();
                         toggleLoading(false);
                         return;
                     }
-                    saveUserProfile(name, email, phone);
+                    // Unit is valid, now create the user
+                    auth.createUserWithEmailAndPassword(email, pass)
+                            .addOnSuccessListener(authResult -> {
+                                FirebaseUser user = auth.getCurrentUser();
+                                if (user == null) {
+                                    toggleLoading(false);
+                                    return;
+                                }
+                                saveUserProfileAndAttachToUnit(user, name, email, str(etPhone), propertyId, unitId);
+                            })
+                            .addOnFailureListener(e -> {
+                                toggleLoading(false);
+                                showError(e);
+                            });
                 })
                 .addOnFailureListener(e -> {
                     toggleLoading(false);
@@ -130,69 +145,48 @@ public class Renter_SignupFragment extends Fragment {
                 });
     }
 
-    private void saveUserProfile(String name, String email, String phone) {
+    private void saveUserProfileAndAttachToUnit(FirebaseUser user, String name, String email, String phone, String propertyId, String unitId) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
-        auth.getCurrentUser().updateProfile(profileUpdates)
-                .addOnSuccessListener(aVoid -> {
-                    String uid = auth.getCurrentUser().getUid();
-                    Map<String, Object> profile = new HashMap<>();
-                    profile.put("uid", uid);
-                    profile.put("name", name);
-                    profile.put("email", email);
-                    profile.put("phone", phone);
-                    profile.put("createdAt", Timestamp.now());
-                    profile.put("userType", "renter"); // ✅ KEY CHANGE: Differentiate user type as "renter"
-                    // Add any renter-specific flags here, e.g.,
-                    // profile.put("renterSetupCompleted", false);
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(task -> {
+                    String uid = user.getUid();
 
-                    db.collection("users").document(uid).set(profile)
-                            .addOnSuccessListener(unused -> routeAfterAuth())
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(getActivity(), "Profile save failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                routeAfterAuth();
+                    // Create user profile
+                    Map<String, Object> userProfile = new HashMap<>();
+                    userProfile.put("uid", uid);
+                    userProfile.put("name", name);
+                    userProfile.put("email", email);
+                    userProfile.put("phone", phone);
+                    userProfile.put("createdAt", Timestamp.now());
+                    userProfile.put("userType", "renter");
+                    userProfile.put("propertyIds", FieldValue.arrayUnion(propertyId));
+
+                    db.collection("users").document(uid).set(userProfile)
+                            .addOnSuccessListener(aVoid -> {
+                                // Attach tenant to unit
+                                db.collection("units").document(unitId).update("tenantIds", FieldValue.arrayUnion(uid))
+                                        .addOnSuccessListener(v -> {
+                                            PushHelper.saveTokenForCurrentUser();
+                                            PushHelper.subscribeToPropertyTopic(propertyId);
+                                            routeToDashboard();
+                                        })
+                                        .addOnFailureListener(this::showError);
                             })
-                            .addOnCompleteListener(task -> toggleLoading(false));
-                })
-                .addOnFailureListener(e -> {
-                    toggleLoading(false);
-                    Toast.makeText(getActivity(), "Profile update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    routeAfterAuth();
+                            .addOnFailureListener(this::showError)
+                            .addOnCompleteListener(done -> toggleLoading(false));
                 });
     }
 
-    private void routeAfterAuth() {
-        // For now, this can route to the same places. You will change this later.
-        if (auth.getCurrentUser() == null) return;
-        String uid = auth.getCurrentUser().getUid();
-
-        db.collection("users").document(uid).get()
-                .addOnSuccessListener((DocumentSnapshot doc) -> {
-                    String userType = doc.getString("userType");
-
-                    // TODO: Create a Renter-specific dashboard/setup later.
-                    if ("renter".equals(userType)) {
-                        // For now, go to the same PM dashboard for testing.
-                        goToDashboard();
-                    } else {
-                        // Default fallback
-                        goToDashboard();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getActivity(), "Failed to read profile, routing to main dashboard.", Toast.LENGTH_SHORT).show();
-                    goToDashboard();
-                });
-    }
-
-    private void goToDashboard() {
-        // TODO: This should eventually go to a RenterMainActivity
+    private void routeToDashboard() {
         if (getActivity() == null) return;
+        // TODO: Create a RenterMainActivity and route here instead. For now, we go to the main one.
         Intent i = new Intent(getActivity(), MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         getActivity().finish();
     }
 
+    // --- Helper Methods ---
     private void toggleLoading(boolean loading) {
         if (btnCreate != null) {
             btnCreate.setEnabled(!loading);
@@ -201,18 +195,19 @@ public class Renter_SignupFragment extends Fragment {
     }
 
     private void clearErrors() {
-        if (tilName != null) tilName.setError(null);
-        if (tilEmail != null) tilEmail.setError(null);
-        if (tilPhone != null) tilPhone.setError(null);
-        if (tilPassword != null) tilPassword.setError(null);
+        tilName.setError(null);
+        tilEmail.setError(null);
+        tilPassword.setError(null);
+        if (tilPropertyId != null) tilPropertyId.setError(null);
+        if (tilUnitId != null) tilUnitId.setError(null);
     }
 
     private String str(TextInputEditText et) {
-        return et.getText() == null ? "" : et.getText().toString().trim();
+        return et.getText() != null ? et.getText().toString().trim() : "";
     }
 
     private void showError(Exception e) {
-        String msg = (e != null && e.getMessage() != null) ? e.getMessage() : "Signup failed";
-        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+        String msg = e.getMessage() != null ? e.getMessage() : "An unknown error occurred.";
+        Toast.makeText(getActivity(), "Error: " + msg, Toast.LENGTH_LONG).show();
     }
 }
