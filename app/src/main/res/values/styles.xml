@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ShapeAppearance.M3.Comp.Badge.Shape.">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator.">
+        <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.Badge.Shape.</item>
+        <item name="android:color">?attr/colorSecondaryContainer</item>
+    </style>
+
+
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <selector
+        xmlns:android="http://schemas.android.com/apk/res/android">
+        <!-- White icon when active -->
+        <item android:state_checked="true" android:color="?attr/colorOnSecondaryContainer"/>
+        <!-- Dark green when inactive -->
+        <item android:color="#0F4C45"/>
+    </selector>
