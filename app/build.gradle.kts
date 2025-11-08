@@ -33,8 +33,6 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.13.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -48,6 +46,5 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation (libs.firebase.auth)
     implementation ("com.google.firebase:firebase-firestore")
-    implementation("com.google.android.material:material:1.13.0")
     implementation("io.agora.rtc:full-sdk:4.6.0")
 }
