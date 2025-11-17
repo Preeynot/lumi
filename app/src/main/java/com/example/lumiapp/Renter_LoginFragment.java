@@ -106,20 +106,30 @@ public class Renter_LoginFragment extends Fragment {
 
     // This method is identical to the one in SignupFragment
     private void routeAfterAuth() {
-        if (auth.getCurrentUser() == null) return;
+
         String uid = auth.getCurrentUser().getUid();
 
         db.collection("users").document(uid).get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     String userType = doc.getString("userType");
 
-                    // TODO: Create a Renter-specific dashboard/setup later.
+                    if (doc.getString("userType") == null || !doc.exists()) {
+                        Toast.makeText(getActivity(), "User profile not found.", Toast.LENGTH_LONG).show();
+                        auth.signOut();
+                        goToAuthActivity();
+                        return;
+                    }
+
                     if ("renter".equals(userType)) {
-                        // For now, go to the same PM dashboard for testing.
-                        goToDashboard();
+                        // This is a Renter, and they are in the correct activity. We stay here.
+                    } else if ("manager".equals(userType)) {
+                        // This is a PM who has incorrectly landed here. Redirect them.
+                        goToPropertyManagerDashboard();
                     } else {
-                        // Default fallback
-                        goToDashboard();
+                        // Unknown user role.
+                        Toast.makeText(getActivity(), "User role could not be determined.", Toast.LENGTH_LONG).show();
+                        auth.signOut();
+                        goToAuthActivity();
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -129,9 +139,22 @@ public class Renter_LoginFragment extends Fragment {
     }
 
     private void goToDashboard() {
-        // TODO: This should eventually go to a RenterMainActivity
         if (getActivity() == null) return;
-        Intent i = new Intent(getActivity(), MainActivity.class);
+        Intent i = new Intent(getActivity(), RenterMainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        getActivity().finish();
+    }
+
+    private void goToPropertyManagerDashboard() {
+        Intent i = new Intent(getActivity(), PMDashboardContainer.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        getActivity().finish();
+    }
+
+    private void goToAuthActivity() {
+        Intent i = new Intent(getActivity(), AuthActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         getActivity().finish();

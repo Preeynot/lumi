@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToDashboard() {
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        Intent i = new Intent(LoginActivity.this, PropertyManagerMainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish(); // Finish this activity so the user can't go back to it

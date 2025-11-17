@@ -83,5 +83,6 @@
     <string name="role_select_description">Please choose status.</string>
     <string name="renter_label">Renter</string>
     <string name="manager_label">Manager</string>
+    <string name="btnLogout">Logout</string>
 
 </resources>

@@ -179,8 +179,7 @@ public class Renter_SignupFragment extends Fragment {
 
     private void routeToDashboard() {
         if (getActivity() == null) return;
-        // TODO: Create a RenterMainActivity and route here instead. For now, we go to the main one.
-        Intent i = new Intent(getActivity(), MainActivity.class);
+        Intent i = new Intent(getActivity(), DashboardRenter.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         getActivity().finish();

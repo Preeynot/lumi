@@ -43,8 +43,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation (libs.firebase.auth)
     implementation ("com.google.firebase:firebase-firestore")
     implementation("io.agora.rtc:full-sdk:4.6.0")
+    implementation ("io.getstream:stream-chat-android-ui-components:6.27.0")
+    implementation ("io.getstream:stream-chat-android-compose:6.27.0")
+    implementation ("io.getstream:stream-chat-android-offline:6.27.0")
+
 }

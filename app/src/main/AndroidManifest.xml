@@ -35,13 +35,13 @@
             android:name=".SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".PropertyManagerMainActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".DashboardPropertyManager"
+            android:name=".PMDashboardContainer"
             android:exported="false" />
         <activity
             android:name=".RenterAccSetup"

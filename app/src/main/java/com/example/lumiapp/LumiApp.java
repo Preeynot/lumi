@@ -5,6 +5,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.LocalCacheSettings;
+import com.google.firebase.firestore.PersistentCacheSettings;
+
 public class LumiApp extends Application {
     public static final String CHAN_OPS  = "lumi_ops";   // For urgent alerts like doorbell
     public static final String CHAN_INFO = "lumi_info";  // For general info
@@ -12,6 +17,14 @@ public class LumiApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Enable Firestore offline persistence
+        PersistentCacheSettings persistentCacheSettings = PersistentCacheSettings.newBuilder().build();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setLocalCacheSettings(persistentCacheSettings)
+                .build();
+        db.setFirestoreSettings(settings);
+
         // Notification channels are required for Android 8.0 (Oreo) and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager nm = getSystemService(NotificationManager.class);

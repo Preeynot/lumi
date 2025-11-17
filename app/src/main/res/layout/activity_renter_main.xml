@@ -17,7 +17,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".RenterMainActivity">
 
         <!-- Everything inside this card becomes your rounded "tray" -->
         <com.google.android.material.card.MaterialCardView
@@ -42,7 +42,7 @@
                 app:itemIconTint="@color/bottom_nav_icon"
                 app:itemTextColor="@color/bottom_nav_text"
                 app:labelVisibilityMode="selected"
-                app:menu="@menu/menu_bottom" />
+                app:menu="@menu/renter_menu_bottom" />
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

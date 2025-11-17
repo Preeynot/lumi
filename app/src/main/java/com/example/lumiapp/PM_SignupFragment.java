@@ -178,7 +178,7 @@ public class PM_SignupFragment extends Fragment {
 
     private void routeToDashboard() {
         if (getActivity() == null) return;
-        Intent i = new Intent(getActivity(), MainActivity.class); // Assuming PMs go to MainActivity
+        Intent i = new Intent(getActivity(), PMDashboardContainer.class); // Assuming PMs go to PropertyManagerMainActivity
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         getActivity().finish();

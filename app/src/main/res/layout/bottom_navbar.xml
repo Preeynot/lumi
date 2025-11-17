@@ -22,9 +22,9 @@
         android:weightSum="4">
 
         <include layout="@layout/nav_dashboard" />
-        <include layout="@layout/nav_dashboard" />
-        <include layout="@layout/nav_dashboard" />
-        <include layout="@layout/nav_dashboard" />
+        <include layout="@layout/nav_message" />
+        <include layout="@layout/nav_profile" />
+        <include layout="@layout/nav_property" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
