@@ -1,6 +1,10 @@
+
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
+
 }
 
 android {
@@ -30,6 +34,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -40,6 +56,9 @@ dependencies {
     implementation(libs.cardview)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.functions)
+    implementation(libs.play.services.drive)
+    implementation(libs.ui)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -47,8 +66,17 @@ dependencies {
     implementation (libs.firebase.auth)
     implementation ("com.google.firebase:firebase-firestore")
     implementation("io.agora.rtc:full-sdk:4.6.0")
-    implementation ("io.getstream:stream-chat-android-ui-components:6.27.0")
     implementation ("io.getstream:stream-chat-android-compose:6.27.0")
+    implementation ("io.getstream:stream-chat-android-ui-components:6.27.0")
     implementation ("io.getstream:stream-chat-android-offline:6.27.0")
+    implementation("io.getstream:stream-chat-android-client:6.27.0")
+
+    // Jetpack Compose Toolkit Dependencies (Required for ComposeView and ChatTheme)
+    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation(platform("androidx.compose:compose-bom:2025.08.00"))
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
 
 }

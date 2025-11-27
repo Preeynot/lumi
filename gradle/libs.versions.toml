@@ -10,6 +10,10 @@ constraintlayout = "2.2.1"
 cardview = "1.0.0"
 firebaseMessaging = "25.0.1"
 firebaseFunctions = "22.1.0"
+playServicesDrive = "17.0.0"
+ui = "1.9.4"
+kotlin = "2.2.21"
+coreKtx = "1.17.0"
 
 [libraries]
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
@@ -23,7 +27,11 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-functions = { group = "com.google.firebase", name = "firebase-functions", version.ref = "firebaseFunctions" }
+play-services-drive = { group = "com.google.android.gms", name = "play-services-drive", version.ref = "playServicesDrive" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

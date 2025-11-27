@@ -3,6 +3,7 @@ package com.example.lumiapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,17 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import io.getstream.chat.android.client.ChatClient;
+import io.getstream.chat.android.client.logger.ChatLogLevel;
+import io.getstream.chat.android.models.User;
+import io.getstream.chat.android.state.plugin.config.StatePluginConfig;
+import io.getstream.chat.android.state.plugin.factory.StreamStatePluginFactory;
+import io.getstream.chat.android.models.Filters;
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelListViewModel;
 
 public class PM_LoginFragment extends Fragment {
 
@@ -69,13 +79,7 @@ public class PM_LoginFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (auth.getCurrentUser() != null) {
-            routeAfterAuth();
-        }
-    }
+
 
     private void tryLogin() {
         clearErrors();
@@ -133,11 +137,59 @@ public class PM_LoginFragment extends Fragment {
     }
 
     private void goToDashboard() {
-        if (getActivity() == null) return;
-        Intent i = new Intent(getActivity(), PMDashboardContainer.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        getActivity().finish();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String userId= firebaseUser.getUid();
+            String userName = firebaseUser.getDisplayName();
+
+            String devTokenAPI = "thrwrmxh3e74";
+
+
+
+            if (!ChatClient.isInitialized()|| ChatClient.instance().getCurrentUser() == null) {
+                // LAST RESORT: Direct Constructor (Only works if the SDK allows a default config)
+                StreamStatePluginFactory statePluginFactory = new StreamStatePluginFactory(
+                        new StatePluginConfig(),getContext());
+
+                ChatClient.Builder builder = new ChatClient.Builder(devTokenAPI, getContext())
+                        .withPlugins(statePluginFactory) // <-- ADD THIS LINE
+                        .logLevel(ChatLogLevel.ALL);
+                ChatClient client = builder.build();
+                // This initializes the static instance of ChatClient.
+            }
+
+
+
+            User user = new User.Builder()
+                    .withId(userId)
+                    .withName(userName)
+                    .build();
+
+            String userToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNk5Za3RaNGpOcE5ObklETWJvTk9TbDFzQkZoMSJ9.xJFBZM52einVIxrllO_nKpR1cQso7MUsLNbAqbZLAT8";
+
+            ChatClient.instance().connectUser(user, userToken).enqueue(result -> {
+                if (result.isSuccess()) {
+                    // User is connected to Stream, now proceed with navigation
+                    Log.d("StreamConnect", "Successfully connected user to Stream.");
+
+                    // Now navigate to the dashboard
+                    Intent intent = new Intent(getActivity(), PMDashboardContainer.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    getActivity().finish();
+                } else {
+                    // Handle connection error
+                    Log.e("StreamConnect", "Failed to connect user: " + result.errorOrNull().getMessage());
+                    Toast.makeText(getActivity(), "Chat connection failed.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+//        if (getActivity() == null) return;
+//        Intent i = new Intent(getActivity(), PMDashboardContainer.class);
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        startActivity(i);
+//        getActivity().finish();
     }
 
     private void toggleLoading(boolean loading) {

@@ -4,11 +4,13 @@
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-feature android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
-    <uses-feature android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".LumiApp"
         android:allowBackup="true"
@@ -18,13 +20,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        tools:targetApi="31"
-        android:theme="@style/AppTheme">
-
+        android:theme="@style/AppTheme"
+        tools:targetApi="31">
         <activity
-            android:name=".AuthActivity" android:exported="true">
+            android:name=".ChannelActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".AuthActivity"
+            android:exported="true">
 
-<!--             2. MAKE THIS THE NEW LAUNCHER -->
+            <!-- 2. MAKE THIS THE NEW LAUNCHER -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,21 +55,19 @@
         <activity
             android:name=".PMAccSetup"
             android:exported="false" />
+
         <service
             android:name=".core.push.LumiMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
+        </service> <!-- Video Call Activity -->
 
-        <!-- Video Call Activity -->
         <activity
             android:name=".features.video.CallActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
-
-
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
