@@ -31,3 +31,4 @@ dependencyResolutionManagement {
         rootProject.name = "Lumi App"
         include(":app")
     }
+include(":backend-tools")

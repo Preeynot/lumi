@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutCreateGroup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Group"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp" />
+
+    <EditText
+        android:id="@+id/editTextGroupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Group name (e.g. Gardening Society)"
+        android:inputType="textCapWords"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/editTextMemberIds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Renter user IDs (comma separated)"
+        android:inputType="text"
+        android:padding="8dp"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/buttonCreateGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Group"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>
